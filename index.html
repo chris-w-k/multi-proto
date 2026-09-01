@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Deniz &amp; Pip</title>
-<meta name="description" content="A voice prototype of adaptive code-switched language learning: a shopkeeper who speaks only the target language, a coach who speaks only yours.">
+<meta name="description" content="A voice prototype of adaptive code-switched language learning: a shopkeeper who speaks only the target language, and a coach you summon one word at a time.">
 <style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -17,9 +17,9 @@
 <div class="wrap">
 
 <header class="mast">
-  <p class="eyebrow">Prototype v2 · Voice + character UI</p>
+  <p class="eyebrow">Prototype v3 · Voice + character UI</p>
   <h1>Deniz &amp; Pip</h1>
-  <p class="stand"><b>Deniz</b> runs the coffee shop and speaks only the target language. <b>Pip</b> is the tutor and speaks only your own. The scaffolding ladder is no longer a setting — it is <b>how much of each turn belongs to Pip</b>. Level 5 is Pip going quiet.</p>
+  <p class="stand"><b>Deniz</b> speaks only Turkish, and never explains himself. Every word he says lands in the bubble and stays there — <b>tap any one</b> and Pip tells you what it means. Words you haven't met yet are <b class="demo">bold</b>.</p>
 </header>
 
 <div class="banner" id="banner"></div>
@@ -30,12 +30,12 @@
     <select id="pack"></select>
   </div>
   <div class="field">
-    <label for="lvl">Starting scaffold level</label>
+    <label for="lvl">Starting support level</label>
     <select id="lvl">
-      <option value="0">0 — Pip says everything</option>
-      <option value="1" selected>1 — single words from Deniz</option>
-      <option value="2">2 — mixed turns</option>
-      <option value="3">3 — Deniz leads, Pip glosses</option>
+      <option value="0">0 — shortest phrases, full support</option>
+      <option value="1" selected>1 — short phrases</option>
+      <option value="2">2 — natural phrases</option>
+      <option value="3">3 — fuller sentences</option>
     </select>
   </div>
   <div class="field">
@@ -48,6 +48,7 @@
   </div>
   <button class="btn" id="start">Start session</button>
   <button class="btn ghost" id="reset">Reset</button>
+  <button class="btn ghost pushright" id="railtoggle" aria-expanded="false" aria-controls="rail">Metrics</button>
 </div>
 
 <div class="lab">
@@ -55,7 +56,6 @@
 
     <div class="stage">
       <svg viewBox="0 0 840 300" role="img" aria-label="A coffee shop. Deniz stands behind the counter; Pip the tutor is perched on a stack of books beside you.">
-        <!-- back wall shelf -->
         <rect x="0" y="0" width="840" height="300" fill="none"/>
         <rect x="404" y="44" width="436" height="7" rx="2" fill="var(--stage-3)" opacity=".8"/>
         <g opacity=".75" fill="var(--stage-3)">
@@ -83,7 +83,6 @@
           <circle cx="591" cy="192" r="6" fill="#d98d6a" opacity=".28"/>
         </g>
 
-        <!-- counter -->
         <rect x="380" y="242" width="460" height="58" fill="var(--stage-2)"/>
         <rect x="380" y="242" width="460" height="9" rx="3" fill="var(--stage-3)"/>
         <g transform="translate(410 214)">
@@ -92,39 +91,36 @@
           <path d="M8 2 q3-5 0-9 M17 2 q3-5 0-9" stroke="var(--stage-3)" stroke-width="2" fill="none" opacity=".8"/>
         </g>
 
-        <!-- PIP — the tutor, a small perched bird -->
+        <!-- PIP — dozing until summoned -->
         <g id="pip" class="charG">
           <ellipse cx="130" cy="279" rx="48" ry="7" fill="var(--stage-3)" opacity=".3"/>
-          <!-- perch: a stack of books -->
           <rect x="94" y="263" width="72" height="12" rx="2" fill="var(--stage-3)"/>
           <rect x="94" y="263" width="6" height="12" fill="var(--pip-3)" opacity=".55"/>
           <rect x="98" y="251" width="64" height="12" rx="2" fill="var(--stage-2)" stroke="var(--stage-3)" stroke-width="1.5"/>
           <rect x="98" y="251" width="6" height="12" fill="var(--beak)" opacity=".6"/>
-          <!-- tail feathers, back-left -->
           <path d="M104 226 l-30 6 l19 7 l-16 10 l29 -9 z" fill="var(--pip-3)"/>
-          <!-- body -->
           <ellipse cx="128" cy="218" rx="31" ry="34" fill="var(--pip)"/>
-          <!-- belly -->
           <ellipse cx="134" cy="228" rx="19" ry="21" fill="var(--pip-2)" opacity=".55"/>
-          <!-- feet -->
           <g stroke="var(--beak)" stroke-width="3" stroke-linecap="round" fill="none">
             <path d="M120 248 v6 M115 254 h10 M138 248 v6 M133 254 h10"/>
           </g>
-          <!-- wing -->
           <path d="M112 200 q-16 14 -10 34 q12 8 20 -4 q4 -18 -10 -30 z" fill="var(--pip-3)"/>
-          <!-- head -->
           <circle cx="136" cy="176" r="27" fill="var(--pip)"/>
-          <!-- head tufts, swept back -->
           <path d="M122 154 q-9 -13 -1 -19 q1 11 8 15 z" fill="var(--pip-3)"/>
           <path d="M133 151 q-5 -15 4 -19 q-3 10 1 16 z" fill="var(--pip-3)"/>
-          <!-- eyes: near eye larger, far eye smaller (three-quarter view) -->
-          <circle cx="130" cy="174" r="10.5" fill="#fff"/>
-          <circle cx="150" cy="177" r="8" fill="#fff"/>
-          <circle cx="132" cy="175" r="4.8" fill="#16202e"/>
-          <circle cx="151" cy="178" r="3.8" fill="#16202e"/>
-          <circle cx="134" cy="173" r="1.7" fill="#fff"/>
-          <circle cx="152.5" cy="176.5" r="1.3" fill="#fff"/>
-          <!-- beak, pointing right toward Deniz -->
+          <!-- open eyes, shown only when awake -->
+          <g class="eyes-open">
+            <circle cx="130" cy="174" r="10.5" fill="#fff"/>
+            <circle cx="150" cy="177" r="8" fill="#fff"/>
+            <circle cx="132" cy="175" r="4.8" fill="#16202e"/>
+            <circle cx="151" cy="178" r="3.8" fill="#16202e"/>
+            <circle cx="134" cy="173" r="1.7" fill="#fff"/>
+            <circle cx="152.5" cy="176.5" r="1.3" fill="#fff"/>
+          </g>
+          <!-- closed eyes, shown while dozing -->
+          <g class="eyes-shut" stroke="#16202e" stroke-width="2.4" stroke-linecap="round" fill="none">
+            <path d="M122 176 q8 6 16 0"/><path d="M144 179 q6 5 13 0"/>
+          </g>
           <path d="M156 174 L180 182 L156 182 Z" fill="var(--beak)"/>
           <path class="mouth" d="M156 183 L180 183 L156 192 Z" fill="var(--beak)" opacity=".88"/>
         </g>
@@ -132,21 +128,30 @@
         <text x="562" y="274" text-anchor="middle" class="namecard" fill="var(--stage-ink)" opacity=".5">DENİZ · <tspan id="dl">TR</tspan></text>
         <text x="130" y="292" text-anchor="middle" class="namecard" fill="var(--stage-ink)" opacity=".7">PIP · <tspan id="pl">EN</tspan></text>
       </svg>
-      <div class="bubble deniz" id="b-deniz"><span class="tag">Deniz</span><span id="b-deniz-t"></span></div>
-      <div class="bubble pip" id="b-pip"><span class="tag">Pip · your coach</span><span id="b-pip-t"></span></div>
+      <div class="pipbubble" id="pip-bubble"></div>
     </div>
+
+    <!-- Deniz's speech: persists until his next turn -->
+    <div class="bubble-wrap" id="bubble-wrap">
+      <div class="bubble" id="bubble">
+        <div class="tag">Deniz</div>
+        <div class="line muted">Press <strong>Start session</strong> and Deniz will greet you.</div>
+      </div>
+    </div>
+
+    <p class="task" id="task" hidden></p>
 
     <div class="control">
       <div class="micwrap">
-        <button class="mic" id="mic" disabled aria-label="Hold to speak">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <button class="mic" id="mic" disabled aria-label="Tap to speak">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor" stroke="none"/>
             <path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>
           </svg>
         </button>
         <span class="ring"></span>
       </div>
-      <div class="micstate" id="micstate">Press start</div>
+      <div class="micstate" id="micstate">press start</div>
       <div class="heard" id="heard"></div>
       <div class="inrow"><input type="text" id="say" placeholder="…or type your answer" autocomplete="off" disabled>
         <button class="btn" id="send" disabled>Send</button></div>
@@ -161,18 +166,24 @@
 
     <div class="scene">
       <span id="scene-name">No session running</span>
-      <span>scaffold <span class="lvl" id="scene-lvl">—</span> · beat <span id="scene-beat">—</span></span>
+      <span>support <span class="lvl" id="scene-lvl">—</span> · beat <span id="scene-beat">—</span></span>
     </div>
     <div class="stream" id="stream">
-      <div class="msg note"><div class="body">The transcript keeps everything Deniz and Pip say, with target-language words highlighted — tap any one to hear it again and see what it means.</div></div>
+      <div class="msg note"><div class="body">The transcript keeps everything, and the words stay tappable here too.</div></div>
     </div>
   </div>
 
-  <aside class="pane">
+  <aside class="pane rail" id="rail" hidden>
     <div class="railsec">
       <h4>North star</h4>
       <div class="stat"><span class="k">Independent target turns / min</span><span class="v hero" id="m-north">—</span></div>
       <div class="stat"><span class="k">Time to first production</span><span class="v" id="m-ttfp">—</span></div>
+    </div>
+    <div class="railsec">
+      <h4>Support taken</h4>
+      <div class="stat"><span class="k">Word taps</span><span class="v" id="m-taps">0</span></div>
+      <div class="stat"><span class="k">Pip summoned</span><span class="v" id="m-pip">0</span></div>
+      <div class="stat"><span class="k">Vocabulary met</span><span class="v" id="m-seen">—</span></div>
     </div>
     <div class="railsec">
       <h4>Voice</h4>
@@ -192,14 +203,8 @@
       <div class="stat"><span class="k">Answered in native language</span><span class="v dim" id="m-native">0</span></div>
       <div class="stat"><span class="k">Froze / skipped</span><span class="v dim" id="m-freeze">0</span></div>
       <div class="stat"><span class="k">"I don't understand"</span><span class="v dim" id="m-lost">0</span></div>
-      <div class="stat"><span class="k">Pip helped</span><span class="v dim" id="m-help">0</span></div>
     </div>
-    <div class="railsec"><h4>Scaffold ladder</h4><div class="ladder" id="ladder"></div></div>
-    <div class="railsec">
-      <h4>Who did the talking</h4>
-      <div class="ratio"><i id="r-native" style="width:100%;background:var(--surface-3)"></i><i id="r-target" style="width:0;background:var(--tl)"></i></div>
-      <div class="ratiolab"><span id="r-lab-n">Pip 100%</span><span id="r-lab-t">Deniz 0%</span></div>
-    </div>
+    <div class="railsec"><h4>Support ladder</h4><div class="ladder" id="ladder"></div></div>
     <div class="railsec"><h4>Learner state</h4><div class="atoms" id="atoms"><span class="empty">Nothing introduced yet.</span></div></div>
   </aside>
 </div>
@@ -208,45 +213,49 @@
   <h2>What it takes</h2>
   <p>Voice output is nearly free. Voice input is the entire problem, and it changes the pedagogy — not just the interface.</p>
 
-  <h3>The idea worth keeping</h3>
-  <p>In text, colour tells the learner which language they are hearing. In audio there is no colour, and a single voice sliding between two languages is genuinely confusing for a beginner. <strong>Two characters solve it.</strong> Deniz only ever speaks the target language; Pip only ever speaks the learner's. The child never has to work out which language a sound belongs to — they know by <em>who said it</em>.</p>
-  <p>That turns the abstract scaffolding ladder into something a five-year-old can feel. Level 0 is Pip narrating with Deniz saying one word. Level 5 is Pip silent, still on screen, still available. <strong>Progress becomes a character receding, not a number going up</strong> — and "Pip hasn't spoken for three turns" is a far better felt reward than a scaffolding percentage. The rail's talk-time split is that same ladder measured honestly.</p>
+  <h3>Why only one of them talks</h3>
+  <p>An earlier version had both characters speaking, the tutor glossing each phrase aloud as the shopkeeper said it. It sounds supportive and it is actually the opposite: the learner never has to <em>reach</em> for anything, because the answer arrives unprompted half a second later. Immersion with a running translation is not immersion.</p>
+  <p>So Deniz speaks the target language and nothing else, and <strong>Pip stays quiet until summoned</strong>. Support moves from something pushed at the learner to something they pull — one word at a time, by tapping it. That single change makes help <em>measurable</em>: every tap is a recorded admission of "I didn't have this one", which is a far better signal than anything you can infer from a learner who was told everything anyway.</p>
+
+  <h3>The bubble is the interface</h3>
+  <p>Deniz's words appear as he says them and stay put through your turn, so you can study the sentence you are answering rather than holding it in your head. Words you have never met are bold; once seen, they settle into normal weight. Over a session the bubble visibly de-bolds — <strong>progress you can see without a progress bar</strong>.</p>
 
   <div class="cards">
     <div><h5>Free</h5><p>Speech synthesis. Built into every browser, no network, no cost, per-character voice and language, adjustable rate — so "speech speed" from the PRD's difficulty model becomes a real dial rather than a listed dimension.</p></div>
-    <div><h5>Hard</h5><p>Recognition. Needs mic permission, a real ASR service in production, and a confidence policy. Browser speech recognition is Chrome/Safari-only and blocked in most embedded contexts — including, possibly, the frame this page is in.</p></div>
+    <div><h5>Hard</h5><p>Recognition. Needs mic permission, a real ASR service in production, and a confidence policy. Browser speech recognition is Chrome/Safari-only and blocked in most embedded contexts.</p></div>
     <div><h5>Dangerous</h5><p>Grading on the transcript. The recogniser becomes the examiner, and it is worse at accented child speech than at anything else it hears.</p></div>
   </div>
 
   <h3>The failure mode to design against first</h3>
   <p>Run language detection over real transcripts of children struggling in a second language and you see what recognisers do with them: unintelligible audio comes back as short fragments in scripts nobody in the room speaks. That is harmless in a chat log. In a system that scores production, it is a child being marked wrong for having an accent — the precise opposite of what this feature is for.</p>
-  <p>So the rule this prototype implements: <strong>low recogniser confidence is never a wrong answer.</strong> Below the threshold, Pip asks again and the turn is not graded. It also checks every alternative the recogniser offers, not just the top one — if any of them match, the learner said it. Both behaviours cost nothing and they are the difference between an encouraging tutor and a discouraging one.</p>
+  <p>So the rule this prototype implements: <strong>low recogniser confidence is never a wrong answer.</strong> Below the threshold the turn is not graded and Deniz simply asks again. The matcher also checks every alternative the recogniser offers, not just the top one. Both cost nothing and they are the difference between an encouraging tutor and a discouraging one.</p>
 
   <h3>What voice adds that text can't measure</h3>
   <ul class="tight">
-    <li><strong>Time before speaking.</strong> The silence between Deniz finishing and the child starting is the closest thing you have to a confidence measure. It should drive the scaffolding, and it is in the rail.</li>
-    <li><strong>Whether they speak at all.</strong> A child who types "kahve" and a child who says it out loud are not doing the same thing. Spoken-vs-typed is the headline voice metric.</li>
-    <li><strong>Pronunciation, sideways.</strong> The PRD excludes pronunciation assessment from MVP, correctly. But confidence scores give you a free, badly-biased proxy — useful for spotting words the recogniser systematically fails on, never for telling a child they said it wrong.</li>
+    <li><strong>Time before speaking.</strong> The silence between Deniz finishing and the child starting is the closest thing you have to a confidence measure. It should drive the scaffolding, and it is in the metrics panel.</li>
+    <li><strong>Whether they speak at all.</strong> A child who types a word and a child who says it out loud are not doing the same thing. Spoken-vs-typed is the headline voice metric.</li>
+    <li><strong>Which words they reach for help on.</strong> Taps are per-word and timestamped — a vocabulary difficulty ranking that falls out of normal use.</li>
   </ul>
 
   <h3>Turn-taking is where voice tutors die</h3>
   <p>Measure any production voice tutor and the same two faults cluster around moments of difficulty: agent turns truncated mid-sentence, and the agent repeating itself. Both are turn-taking failures, and beginners provoke them — they pause mid-sentence to think, the endpointer reads the pause as a finished turn, the agent talks over them, they stop.</p>
-  <p><strong>Silence tolerance should be a function of scaffolding level</strong> — three or four seconds at level 1, one and a half by level 5. That single parameter is probably worth more to a beginner than any amount of content work.</p>
+  <p><strong>Silence tolerance should be a function of support level</strong> — three or four seconds early on, one and a half once they are fluent in the scenario. That single parameter is probably worth more to a beginner than any amount of content work.</p>
 
   <h3>Rough effort, if you build it properly</h3>
   <div class="tw">
   <table class="effort">
     <thead><tr><th>Piece</th><th>What's involved</th><th>Size</th></tr></thead>
     <tbody>
-      <tr><td>Two-character voice layer</td><td>Voice per character, rate by level, turn sequencing, mouth animation, bubbles. This prototype is the proof.</td><td>~1 week</td></tr>
+      <tr><td>Character voice layer</td><td>Voice per character, rate by level, word-synced bubble reveal, mouth animation. This prototype is the proof.</td><td>~1 week</td></tr>
       <tr><td>Speech in, production</td><td>Not the browser API — your existing realtime voice pipeline already carries the audio. Add per-utterance confidence, n-best alternatives, and level-driven endpointing.</td><td>1–2 weeks</td></tr>
+      <tr><td>Tappable transcript</td><td>Phrase-level alignment so "anything else" glosses as one chunk, plus the per-learner seen-vocabulary set that drives the bolding.</td><td>~1 week</td></tr>
       <tr><td>Answer matcher on transcripts</td><td>The text matcher plus phonetic tolerance and a "didn't catch that" path. Ungraded below threshold.</td><td>~1 week</td></tr>
       <tr><td>Character art &amp; animation</td><td>Two characters, four states each (idle, talking, listening, celebrating). Placeholder SVG is fine to test with.</td><td>1–2 weeks design</td></tr>
-      <tr><td>Instrumentation</td><td>Confidence, think-time, talk-time split and spoken-vs-typed into your analytics. Switch on a language-proficiency evaluator over the traces while you're there.</td><td>~3 days</td></tr>
+      <tr><td>Instrumentation</td><td>Confidence, think-time, taps-per-word and spoken-vs-typed into your analytics.</td><td>~3 days</td></tr>
     </tbody>
   </table>
   </div>
-  <p style="font-size:15px;color:var(--ink-3);font-family:var(--ui)">Roughly a month of one engineer plus design, on top of an existing realtime voice stack. The content — beats, accepted answers, repairs — is the long pole, and it is the part an LLM should be generating offline into a reviewable format rather than improvising live.</p>
+  <p class="fineprint">Roughly a month of one engineer plus design, on top of an existing realtime voice stack. The content — beats, accepted answers, the phrase dictionary — is the long pole, and it is the part an LLM should be generating offline into a reviewable format rather than improvising live.</p>
 
   <h3>What this page is not</h3>
   <p>Still a scripted engine: authored beats, no model at runtime. Voice here is the browser's own synthesis and recognition, which is why it may refuse to listen inside an embedded frame — the banner at the top says which parts your browser granted. In production none of this is the browser's job; it is the realtime agent's, and everything above should be read as a spec for that, not as an implementation.</p>
